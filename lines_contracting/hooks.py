@@ -5,6 +5,17 @@ app_description = "."
 app_email = "m.naguib@egygab.com"
 app_license = "mit"
 
+
+fixtures = [{"dt": "Custom Field", "filters": [["name", "in", [
+		"Company-contract_accounts",
+		"Company-contract_revenue_account",
+		"Company-contract_cheques_under_collection_account",
+        "contract_ntermediate_contract_debtors_account"
+
+	]]]}
+]
+
+
 # Apps
 # ------------------
 
