@@ -11,11 +11,16 @@
   "cheque_amount",
   "amended_from",
   "cheque_status",
+  "party_type",
+  "party",
   "column_break_jvcm",
   "cheque_no",
   "posting_date",
   "project",
   "company",
+  "deposit_account",
+  "collection_account",
+  "ignore_deducted_gl_entry",
   "section_break_tfog",
   "remarks",
   "gl_entry_section",
@@ -117,13 +122,46 @@
   {
    "fieldname": "column_break_mlkg",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "deposit_account",
+   "fieldtype": "Link",
+   "label": "Deposit Account",
+   "options": "Account"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "collection_account",
+   "fieldtype": "Link",
+   "label": "Collection Account",
+   "options": "Account"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "ignore_deducted_gl_entry",
+   "fieldtype": "Check",
+   "label": "Ignore Deducted GL Entry"
+  },
+  {
+   "depends_on": "eval:doc.docstatus==0",
+   "fieldname": "party_type",
+   "fieldtype": "Select",
+   "label": "Party Type",
+   "options": "Customer\nSupplier"
+  },
+  {
+   "fieldname": "party",
+   "fieldtype": "Dynamic Link",
+   "label": "Party",
+   "options": "party_type"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-10 11:36:35.679237",
+ "modified": "2026-01-04 10:33:44.744561",
  "modified_by": "Administrator",
  "module": "Lines Contracting",
  "name": "Contract Cheque",
@@ -144,6 +182,7 @@
   }
  ],
  "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

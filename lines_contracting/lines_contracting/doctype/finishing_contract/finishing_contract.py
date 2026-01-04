@@ -21,11 +21,13 @@ class FinishingContract(Document):
 		if not cont_int_dept_acc:
 			frappe.throw(_("Intermediate Contract Debtors Account not defined in the company setup page"))
 				
-		# contr_chqu_uc_acc = frappe.db.get_value("Company", self.company, "contract_cheques_under_collection_account")
-		# if not contr_chqu_uc_acc:
-		# 	frappe.throw(_("Contract Cheques Under Collection Account not defined in the company setup page"))
+		contr_chqu_uc_acc = frappe.db.get_value("Company", self.company, "contract_cheques_under_collection_account")
+		if not contr_chqu_uc_acc:
+			frappe.throw(_("Contract Cheques Under Collection Account not defined in the company setup page"))
 
-		usr_message = self.make_journal_entry(cont_int_dept_acc, cont_revenue_acc, self.total_amount, self.posting_date, party_type=None, party=None, cost_center=None, 
+		party_type="Customer"
+		party=self.customer
+		usr_message = self.make_journal_entry(cont_int_dept_acc, cont_revenue_acc, self.total_amount, self.posting_date, party_type=party_type, party=party, cost_center=None, 
 				save=True, submit=True)
 		
 		# Log a custom activity
@@ -53,6 +55,9 @@ class FinishingContract(Document):
 			new_chq.project = self.project
 			new_chq.cheque_amount = pymt.payment_amount
 			new_chq.cheque_status = "Draft"
+			new_chq.deposit_account = contr_chqu_uc_acc
+			new_chq.party_type = "Customer"
+			new_chq.party = self.customer
 
 			new_chq.insert()
 
@@ -70,8 +75,8 @@ class FinishingContract(Document):
 		jv.set("accounts", [
 			{
 				"account": account1,
-				"party_type": party_type ,
-				"party": party ,
+				"party_type": party_type, #None,
+				"party": party, #None,
 				"cost_center": cost_center,
 				"project": self.project,
 				"debit_in_account_currency": amount if amount > 0 else 0,

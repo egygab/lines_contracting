@@ -31,10 +31,15 @@ class ContractCheque(Document):
 
 		cheques_under_coll = frappe.db.get_value("Company", self.company, "contract_cheques_under_collection_account")
 		if not cheques_under_coll:
-			frappe.throw(_("Intermediate Contract Debtors Account not defined in the company setup page"))
+			frappe.throw(_("Contract Cheques Under Collection Account not defined in the company setup page"))
 
 
 		old_cheque_status = None
+		party_type=None
+		party=None
+		party_type2=None
+		party2=None
+
 		if not self.is_new():
 			try:
 				old_doc = self.get_doc_before_save()
@@ -60,13 +65,18 @@ class ContractCheque(Document):
 			####################################
 			####################################
 			if not self.issued_journal_entry :
-				jv_name = self.make_journal_entry(cheques_under_coll, cont_int_dept_acc, self.cheque_amount, self.posting_date, party_type=None, party=None, cost_center=None, 
+				if self.deposit_account != cheques_under_coll:
+					party_type2 = self.party_type
+					party2 = self.party
+
+				jv_name = self.make_journal_entry(self.deposit_account , cont_int_dept_acc, self.cheque_amount, self.posting_date, party_type=party_type, party=party, party_type2=party_type2, party2=party2,cost_center=None, 
 						save=True, submit=True)
 				frappe.db.set_value('Contract Cheque', self.name, 'issued_journal_entry', jv_name)
-				
-
 
 			frappe.db.set_value('Contract Cheque', self.name, 'cheque_status', 'Issued')#,update_modified=False)
+			if self.deposit_account != cheques_under_coll:
+				frappe.db.set_value('Contract Cheque', self.name, 'ignore_deducted_gl_entry', True)#,update_modified=False)
+
 			
 			frappe.db.commit()
 			self.reload()
@@ -77,12 +87,18 @@ class ContractCheque(Document):
 
 			#TODO Create GL entry
 			####################################
-			jv_name = self.make_journal_entry(cont_revenue_acc, cheques_under_coll, self.cheque_amount, self.posting_date, party_type=None, party=None, cost_center=None, 
-					save=True, submit=True)
-			
-			# Log a custom activity
-			usr_message = _("Journal Entry {0} created").format(comma_and(jv_name))
-			self.add_comment("Info", usr_message)	
+			if not self.ignore_deducted_gl_entry :
+				if not self.collection_account:
+					frappe.throw(_("Collection Account not Selected"))
+					
+				party_type2 = self.party_type
+				party2 = self.party
+				jv_name = self.make_journal_entry(self.collection_account, cheques_under_coll, self.cheque_amount, self.posting_date, party_type=party_type, party=party,party_type2=party_type2, party2=party2, cost_center=None, 
+						save=True, submit=True)
+				
+				# Log a custom activity
+				usr_message = _("Journal Entry {0} created").format(comma_and(jv_name))
+				self.add_comment("Info", usr_message)	
 
 		if cheque_status == "Cancelled":
 			if old_cheque_status != "Issued" :
@@ -97,7 +113,7 @@ class ContractCheque(Document):
 			usr_message = _("Journal Entry {0} created").format(comma_and(jv_name))
 			self.add_comment("Info", usr_message)	
 
-	def make_journal_entry(self, account1, account2, amount, posting_date=None, party_type=None, party=None, cost_center=None, 
+	def make_journal_entry(self, account1, account2, amount, posting_date=None, party_type=None, party=None, party_type2=None, party2=None, cost_center=None, 
 							save=True, submit=False):
 		jv = frappe.new_doc("Journal Entry")
 		jv.posting_date = posting_date or nowdate()
@@ -115,8 +131,8 @@ class ContractCheque(Document):
 				"credit_in_account_currency": abs(amount) if amount < 0 else 0
 			}, {
 				"account": account2,
-				"party_type": party_type ,
-				"party": party ,
+				"party_type": party_type2 ,
+				"party": party2 ,
 				"cost_center": cost_center,
 				"project": self.project,
 				"credit_in_account_currency": amount if amount > 0 else 0,

@@ -16,6 +16,7 @@
   "sales_order",
   "project",
   "total_amount",
+  "customer",
   "section_break_szzo",
   "remarks"
  ],
@@ -93,6 +94,15 @@
    "fieldname": "remarks",
    "fieldtype": "Small Text",
    "label": "Remarks"
+  },
+  {
+   "fetch_from": "sales_order.customer",
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer",
+   "read_only": 1,
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
@@ -104,7 +114,7 @@
    "link_fieldname": "finishing_contract"
   }
  ],
- "modified": "2025-12-09 11:06:38.339003",
+ "modified": "2026-01-04 09:45:18.237918",
  "modified_by": "Administrator",
  "module": "Lines Contracting",
  "name": "Finishing Contract",
@@ -126,6 +136,7 @@
   }
  ],
  "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
