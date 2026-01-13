@@ -114,7 +114,7 @@
    "link_fieldname": "finishing_contract"
   }
  ],
- "modified": "2026-01-04 09:45:18.237918",
+ "modified": "2026-01-13 09:19:36.227494",
  "modified_by": "Administrator",
  "module": "Lines Contracting",
  "name": "Finishing Contract",
@@ -130,6 +130,31 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Finishing Contract User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Finishing Contract Manager",
    "share": 1,
    "submit": 1,
    "write": 1
